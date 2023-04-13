@@ -1,4 +1,4 @@
-	//Init function to init extension
+		//Init function to init extension
 var animations = function () {
 //aniamtion variables
 	let timer = ''
@@ -34,6 +34,16 @@ var animations = function () {
             }
         });
 
+			        let randomTime = 0
+        Object.defineProperty(animations, 'randomTime', {
+            set(v) {
+                randomTime = v;
+            },
+            get() {
+                return randomTime;
+            }
+        });
+
 		        let loops = ''
         Object.defineProperty(animations, 'loops', {
             set(v) {
@@ -64,13 +74,9 @@ var animations = function () {
             }
         });
 
-	//functions for animations
-	animations.pauseAnimation = function () {
-											clearInterval(timer);
-	}
-	
-	animations.startAnimation = function () {
-		timer = window.setInterval(function () {
+					//function for irretating through farmes
+
+	function nextFrame () {
 			animations.sprite.src = animations.frames[animations.frameNumber];
 
 			//order of frames
@@ -87,6 +93,45 @@ var animations = function () {
 				}
 				animations.frameNumber = 0;
 			}
-		},animations.time);
+		}
+
+	let randomFramesInt = setRandomInterval()
+
+	//functions for animations
+	animations.pauseAnimation = function () {
+		randomFramesInt.clear()
+											clearInterval(timer);
+	}
+	
+	animations.startAnimation = function () {
+		animations.pauseAnimation();
+	if(animations.randomTime == 0) {
+		timer = window.setInterval(nextFrame,animations.time);
+	} else {
+		randomFramesInt = setRandomInterval(nextFrame,animations.time,animations.randomTime);
+	}
 }
 }
+
+					//function for random time
+
+const setRandomInterval = (intervalFunction, minDelay, maxDelay) => {
+  let timeout;
+
+  const runInterval = () => {
+    const timeoutFunction = () => {
+      intervalFunction();
+      runInterval();
+    };
+
+    const delay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
+
+    timeout = setTimeout(timeoutFunction, delay);
+  };
+
+  runInterval();
+
+  return {
+    clear() { clearTimeout(timeout) },
+  };
+};
